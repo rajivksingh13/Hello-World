@@ -1,0 +1,28 @@
+C:\Users\Rajiv>git config --global user.name "Rajiv"
+
+C:\Users\Rajiv>git config --global user.email rajeksingh2@gmail.com
+
+C:\Users\Rajiv>git init
+
+C:\Users\Rajiv>git clone git@github.com:rajivksingh13/Hello-World.git
+It will Create a Repository with Name Hellow-World
+
+C:\Users\Rajiv>cd C:\Users\Rajiv\Hello-World
+
+Place the file in Hello World Repository
+
+C:\Users\Rajiv\Hello-World>git add HelloWorld.java
+C:\Users\Rajiv\Hello-World>git log
+C:\Users\Rajiv\Hello-World>git Status
+C:\Users\Rajiv\Hello-World>git commit -m "Hello Test Commit"
+C:\Users\Rajiv\Hello-World>git push
+ It will open gitHub Log-in pannel , Enter your Credentials and log-in
+ C:\Users\Rajiv\Hello-World>git push
+Counting objects: 3, done.
+Delta compression using up to 4 threads.
+Compressing objects: 100% (3/3), done.
+Writing objects: 100% (3/3), 385 bytes | 0 bytes/s, done.
+Total 3 (delta 0), reused 0 (delta 0)
+To https://github.com/rajivksingh13/Hello-World.git
+   70f29cc..c3a87d5  master -> master
+Next Log-in to your GitHub Account you will be able to see one HelloWorld.java Added for your Repository.
