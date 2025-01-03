@@ -1,7 +1,7 @@
 import streamlit as st
-
+hellow_msg = st.secrets["HELLO_MSG"]
 def main():
-    st.title("Hello, World!")
+    st.title(hellow_msg)
     st.write("Welcome to your first Streamlit app.")
     
     # Add a text input widget
