@@ -29,15 +29,20 @@ if "messages" not in st.session_state:
     st.session_state.messages = []
 
 # User input
-with st.form("chat_form", clear_on_submit=True):
-    user_input = st.text_input("You:", "")
-    submitted = st.form_submit_button("Send")
+with st.container():
+    col1, col2 = st.columns([6, 1])  # Adjust column width ratios as needed
+    with col1:
+        user_input = st.text_area("Type your message:", key="user_input", label_visibility="collapsed")
+    with col2:
+        send_button = st.button("➡️", key="send_button")
 
 # Handle user input
-if submitted and user_input:
-    st.session_state.messages.append({"role": "user", "content": user_input})
-    bot_response = get_openai_response(user_input)
+if send_button and user_input.strip():
+    st.session_state.messages.append({"role": "user", "content": user_input.strip()})
+    bot_response = get_openai_response(user_input.strip())
     st.session_state.messages.append({"role": "assistant", "content": bot_response})
+    # Clear input after submission
+    st.session_state.user_input = ""
 
 # Display chat history
 for message in st.session_state.messages:
