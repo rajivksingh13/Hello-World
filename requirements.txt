@@ -1,7 +1,7 @@
 streamlit==1.41.1
 openai==0.28
 PyPDF2==3.0.1
-langchain== 0.3.13
-chromadb==0.4.3
+langchain==0.119.0  # Compatible with pydantic<2.0
+chromadb==0.3.27  # Compatible with pydantic<2.0
 tiktoken==0.5.0
-pydantic<2.0,>=1.9
+pydantic==1.10.12  # Explicitly pin to avoid conflicts
