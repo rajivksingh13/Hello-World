@@ -6,7 +6,7 @@ from langchain.vectorstores import Chroma
 from langchain.embeddings.openai import OpenAIEmbeddings
 
 # Set up OpenAI API key
-openai.api_key = "your_openai_api_key"
+openai.api_key = st.secrets["OPEN_AI_KEY"]
 
 # Function to extract text from a PDF file
 def extract_text_from_pdf(pdf_file):
