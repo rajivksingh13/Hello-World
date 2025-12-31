@@ -6,18 +6,18 @@ servers:
 - url: https://api.example.com
   description: API Server
 paths:
-  /users/{id}:
-    get:
-      summary: GET /users/{id}
-      description: GET operation for /users/{id}
-      operationId: getUserById
+  /order/create:
+    post:
+      summary: POST /order/create
+      description: POST operation for /order/create
+      operationId: createOrder
       responses:
         '200':
           description: Successful operation
           content:
             application/json:
               schema: &id001
-                $ref: '#/components/schemas/GetUserByIdResponse'
+                $ref: '#/components/schemas/CreateOrderResponse'
             application/xml:
               schema: *id001
           headers:
@@ -51,7 +51,7 @@ paths:
                 format: date-time
                 example: '2024-01-01T01:00:00Z'
         '400':
-          description: Invalid request
+          description: Invalid input
           headers: &id002
             X-Request-ID:
               description: Echo of the request ID
@@ -82,8 +82,8 @@ paths:
                 type: string
                 format: date-time
                 example: '2024-01-01T01:00:00Z'
-        '404':
-          description: Not found
+        '422':
+          description: Validation exception
           headers: *id002
         default:
           description: Unexpected error
@@ -92,13 +92,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           headers: *id002
+      tags:
+      - order
       parameters:
-      - name: id
-        in: path
-        description: id parameter
-        required: true
-        schema:
-          type: string
       - name: Authorization
         in: header
         description: Bearer token for authentication
@@ -158,9 +154,53 @@ paths:
           - application/json
           - application/xml
           default: application/json
+      requestBody:
+        description: Request body for POST /order/create
+        content:
+          application/json:
+            schema: &id003
+              $ref: '#/components/schemas/CreateOrderRequest'
+          application/xml:
+            schema: *id003
+          application/x-www-form-urlencoded:
+            schema: *id003
+        required: true
 components:
   schemas:
-    GetUserByIdResponse:
+    Coordinates:
+      type: object
+      properties:
+        latitude:
+          type: number
+        longitude:
+          type: number
+    Address:
+      type: object
+      properties:
+        street:
+          type: string
+        city:
+          type: string
+        state:
+          type: string
+        zipcode:
+          type: string
+        coordinates:
+          $ref: '#/components/schemas/Coordinates'
+    PaymentMethod:
+      type: object
+      properties:
+        type:
+          type: string
+        card_number:
+          type: string
+        expiry_month:
+          type: integer
+          format: int32
+        expiry_year:
+          type: integer
+          format: int32
+    User:
       type: object
       properties:
         id:
@@ -172,7 +212,122 @@ components:
           type: string
           format: email
           pattern: ^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$
-        phone:
+        address:
+          $ref: '#/components/schemas/Address'
+        payment_method:
+          $ref: '#/components/schemas/PaymentMethod'
+    Items:
+      type: object
+      properties:
+        product_id:
+          type: string
+        name:
+          type: string
+        quantity:
+          type: integer
+          format: int32
+        price:
+          type: number
+    Address2:
+      type: object
+      properties:
+        street:
+          type: string
+        city:
+          type: string
+        zipcode:
+          type: string
+    Shipping:
+      type: object
+      properties:
+        method:
+          type: string
+        address:
+          $ref: '#/components/schemas/Address2'
+    Order:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Items'
+        shipping:
+          $ref: '#/components/schemas/Shipping'
+    CreateOrderRequest:
+      type: object
+      properties:
+        user:
+          $ref: '#/components/schemas/User'
+        order:
+          $ref: '#/components/schemas/Order'
+      required:
+      - user
+      - order
+    Customer:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+          pattern: ^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$
+    Category:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+    Product:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        category:
+          $ref: '#/components/schemas/Category'
+    Items2:
+      type: object
+      properties:
+        item_id:
+          type: string
+        product:
+          $ref: '#/components/schemas/Product'
+        quantity:
+          type: integer
+          format: int32
+        total_price:
+          type: number
+    Method:
+      type: object
+      properties:
+        type:
+          type: string
+        last_four:
+          type: string
+    Payment:
+      type: object
+      properties:
+        payment_id:
+          type: string
+        method:
+          $ref: '#/components/schemas/Method'
+        amount:
+          type: number
+        status:
+          type: string
+          enum:
+          - authorized
+          - pending
+    CreateOrderResponse:
+      type: object
+      properties:
+        order_id:
           type: string
         status:
           type: string
@@ -180,18 +335,24 @@ components:
           type: string
           format: date-time
           pattern: ^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{1,6})?(Z|[+-]\d{2}:\d{2})?$
-        updated_at:
-          type: string
-          format: date-time
-          pattern: ^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{1,6})?(Z|[+-]\d{2}:\d{2})?$
+        customer:
+          $ref: '#/components/schemas/Customer'
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Items2'
+        payment:
+          $ref: '#/components/schemas/Payment'
+        total:
+          type: number
       required:
-      - id
-      - name
-      - email
-      - phone
+      - order_id
       - status
       - created_at
-      - updated_at
+      - customer
+      - items
+      - payment
+      - total
     Error:
       type: object
       properties:
